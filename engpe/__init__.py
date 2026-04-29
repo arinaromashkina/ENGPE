@@ -25,7 +25,8 @@ Quick start
 
 from engpe.flow import ScoreShiftFlowWrapper, ScoreShiftFlow
 from engpe.fdr import compute_qvalues, calculate_mixmax_qvalues, calculate_tdc_qvalues
-from engpe.performance import estimate_accuracy, estimate_precision_recall
+from engpe.performance import (estimate_accuracy, estimate_precision_recall,
+                               compute_true_accuracy_curve)
 from engpe.null_pool import build_null_pools, build_decoy_vectors
 from engpe.dataset import ScoreFeatureDataset, build_dataset_from_scores
 from engpe.baselines import BASELINE_METHODS, temperature_scale
@@ -38,6 +39,7 @@ __all__ = [
     'calculate_tdc_qvalues',
     'estimate_accuracy',
     'estimate_precision_recall',
+    'compute_true_accuracy_curve',
     'build_null_pools',
     'build_decoy_vectors',
     'ScoreFeatureDataset',

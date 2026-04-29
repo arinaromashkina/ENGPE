@@ -31,6 +31,7 @@ from engpe import (
     build_null_pools,
     compute_qvalues,
     estimate_accuracy,
+    compute_true_accuracy_curve,
     BASELINE_METHODS,
     temperature_scale,
     ScoreFeatureDataset,
@@ -136,29 +137,36 @@ def main(args):
             print(f"    Too few pixels ({n}), skipping")
             continue
 
-        true_acc  = float((ms.argmax(1) == ls).mean())
-        pred      = ms.max(axis=1)
-        decoy     = ds_flow.max(axis=1)
-        sort_idx  = np.argsort(pred)
-        q_mm      = compute_qvalues(pred, decoy, method='mixmax')
-        q_sorted  = q_mm[sort_idx]
-        pi0_mm    = float(np.clip(q_sorted[0], 0, 1))
+        pred     = ms.max(axis=1)
+        decoy    = ds_flow.max(axis=1)
+        pred_cls = ms.argmax(1)
+        sort_idx = np.argsort(pred)
+
+        true_acc_curve = compute_true_accuracy_curve(pred, ls, pred_cls)
+        acc_st_true    = float(true_acc_curve[0])
+        acc_ta_true    = float(true_acc_curve.max())
+
+        q_mm     = compute_qvalues(pred, decoy, method='mixmax')
+        q_sorted = q_mm[sort_idx]
+        pi0_mm   = float(np.clip(q_sorted[0], 0, 1))
         acc_st, acc_ta, _ = estimate_accuracy(pred[sort_idx], q_sorted, pi0_mm)
 
         tgt_t = torch.tensor(ms).to(device) / temp
-        row = dict(tile=tile_name, n_pixels=n, true_acc=true_acc,
+        row = dict(tile=tile_name, n_pixels=n,
+                   acc_st_true=acc_st_true, acc_ta_true=acc_ta_true,
                    acc_st_mm=acc_st, acc_ta_mm=acc_ta,
-                   err_st=abs(acc_st - true_acc),
-                   err_ta=abs(acc_ta - true_acc))
+                   err_st=abs(acc_st - acc_st_true),
+                   err_ta=abs(acc_ta - acc_ta_true))
         for mname, mfn in BASELINE_METHODS.items():
             try:
                 est = float(np.clip(mfn(src_t / temp, src_l, tgt_t), 0, 1))
             except Exception:
                 est = float('nan')
             row[f'est_{mname}'] = est
-            row[f'err_{mname}'] = abs(est - true_acc)
+            row[f'err_{mname}'] = abs(est - acc_ta_true)
         all_results.append(row)
-        print(f"    true={true_acc:.4f}  ENGPE-ST={acc_st:.4f}  ENGPE-TA={acc_ta:.4f}")
+        print(f"    true_st={acc_st_true:.4f}  true_ta={acc_ta_true:.4f}"
+              f"  ENGPE-ST={acc_st:.4f}  ENGPE-TA={acc_ta:.4f}")
 
     # ── Summary ──────────────────────────────────────────────────────────────
     df = pd.DataFrame(all_results)

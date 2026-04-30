@@ -2,10 +2,6 @@
 
 **Label-free performance estimation under distribution shift for multi-class deep neural networks.**
 
-> *Arina Romashkina · Viktoria Fokina · Attila Kertesz-Farkas*  
-> Laboratory on AI for Computational Biology, HSE University  
-> **NeurIPS 2026** · [Paper](#) · [BibTeX](#citation)
-
 ---
 
 ## Overview
@@ -29,7 +25,6 @@ The null logits are then used with the **Mix-Max** FDR procedure (Keich et al., 
 | No test labels needed | ✓ | ✓ | ✓ |
 | Threshold-adapted accuracy | ✗ | ✗ | ✓ |
 | Per-sample q-values | ✗ | ✗ | ✓ |
-| Theoretical FDR guarantees | ✗ | ✗ | ✓ |
 | Works under subpopulation shift | ✗ | ✗ | ✓ |
 
 **Results:** ENGPE reduces mean absolute error (MAE) by **36%** on average across four challenging benchmarks (Camelyon17, CIFAR-10-C, BCSS, BREEDS) compared to the best competitor.
@@ -194,24 +189,7 @@ FN(s_th) = N · (1 − π₀) − TP(s_th)
 
 ---
 
-## Citation
-
-```bibtex
-@inproceedings{romashkina2026engpe,
-  title     = {Label-free performance evaluation with empirical null generation
-               under data distribution shift in multi-class classification problems},
-  author    = {Romashkina, Arina and Fokina, Viktoria and Kertesz-Farkas, Attila},
-  booktitle = {Advances in Neural Information Processing Systems},
-  year      = {2026}
-}
-```
-
----
-
 ## Acknowledgements
-
-This research was supported in part through computational resources provided
-by the HPC facilities at HSE University and by National Science Foundation award 2245300.
 
 The baseline implementations are based on:
 - [ATC / DOC](https://github.com/saurabhgarg1996/ATC_code) — Garg et al. (2022)
